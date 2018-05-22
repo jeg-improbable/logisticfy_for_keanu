@@ -4,12 +4,14 @@ import json
 import pprint
 import csv
 import logging
+import random
 
 parser = argparse.ArgumentParser()
 #parser.add_argument('-n','--number',help='number of fields',type=int,required=True)
 parser.add_argument('-p','--predict',help='field to predict', type=str)
 parser.add_argument('-d','--data',required=False)
 parser.add_argument('-o','--output')
+parser.add_argument('-s','--subsample',type=float)
 
 def determine_data(args):
 
@@ -20,8 +22,10 @@ def determine_data(args):
         print(data.fieldnames)
 
         prediction_index = len(data.fieldnames)-1
+        print("data: {}".format(data))
+        print(type(data.fieldnames))
         if(args.predict):
-            prediction_index = data.fieldnames.indexof(args.predict)
+            prediction_index = data.fieldnames.index(args.predict)
         else:
             logging.info("No --predict field indicated so assuming we want to predict the last column")
 
@@ -34,6 +38,10 @@ def determine_data(args):
                 independent_variables[n] = []
 
         for r in data:
+            if random.random() > args.subsample:
+
+                continue
+
             for k in independent_variables:
                 independent_variables[k].append(float(r[k]))
             dependent_variable[dependent_name].append(float(r[dependent_name]))
